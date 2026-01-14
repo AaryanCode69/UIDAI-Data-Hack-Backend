@@ -1,0 +1,101 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "region_name": "Gurugram Sector 50-60",
+        "growth_score": 0.89,
+        "classification": "peri-urban"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[77.0200, 28.4200], [77.0800, 28.4200], [77.0800, 28.4600], [77.0200, 28.4600], [77.0200, 28.4200]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "region_name": "Noida Extension",
+        "growth_score": 0.92,
+        "classification": "peri-urban"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[77.4800, 28.5000], [77.5500, 28.5000], [77.5500, 28.5700], [77.4800, 28.5700], [77.4800, 28.5000]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "region_name": "Pune Hinjewadi",
+        "growth_score": 0.85,
+        "classification": "urban"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[73.6800, 18.5800], [73.7500, 18.5800], [73.7500, 18.6300], [73.6800, 18.6300], [73.6800, 18.5800]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "region_name": "Bangalore Whitefield",
+        "growth_score": 0.78,
+        "classification": "urban"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[77.7200, 12.9500], [77.7900, 12.9500], [77.7900, 13.0100], [77.7200, 13.0100], [77.7200, 12.9500]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "region_name": "Hyderabad ORR Corridor",
+        "growth_score": 0.81,
+        "classification": "peri-urban"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[78.3000, 17.4000], [78.4200, 17.4000], [78.4200, 17.4800], [78.3000, 17.4800], [78.3000, 17.4000]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "region_name": "Chennai Porur",
+        "growth_score": 0.72,
+        "classification": "urban"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[80.1500, 13.0300], [80.2000, 13.0300], [80.2000, 13.0700], [80.1500, 13.0700], [80.1500, 13.0300]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "region_name": "Sonipat Rural",
+        "growth_score": 0.45,
+        "classification": "rural"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[77.0000, 28.9500], [77.1500, 28.9500], [77.1500, 29.0500], [77.0000, 29.0500], [77.0000, 28.9500]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "region_name": "Faridabad Ballabhgarh",
+        "growth_score": 0.68,
+        "classification": "peri-urban"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[77.3000, 28.3200], [77.3800, 28.3200], [77.3800, 28.3800], [77.3000, 28.3800], [77.3000, 28.3200]]]
+      }
+    }
+  ]
+}
