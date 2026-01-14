@@ -7,9 +7,13 @@ import { DatabaseService } from '../database/database.service';
 import {
   GeoJSONFeatureCollection,
   GeoJSONFeature,
-  GeoJSONGeometry,
   GrowthZoneProperties,
 } from '../common/types/geojson.types';
+import {
+  safeParseGeometry,
+  safeISOString,
+  emptyFeatureCollection,
+} from '../common/utils/geojson.utils';
 
 interface GrowthZoneRow {
   id: string;
@@ -29,6 +33,7 @@ export class GrowthService {
   /**
    * Retrieves all growth zones as a GeoJSON FeatureCollection
    * Each feature is a Polygon representing a classified region
+   * Returns empty FeatureCollection if no data or on error
    */
   async getGrowthZones(): Promise<
     GeoJSONFeatureCollection<GrowthZoneProperties>
@@ -48,19 +53,40 @@ export class GrowthService {
         ORDER BY growth_score DESC
       `);
 
-      const features: GeoJSONFeature<GrowthZoneProperties>[] = result.rows.map(
-        (row) => ({
+      // Handle empty result set
+      if (!result.rows || result.rows.length === 0) {
+        this.logger.debug('No growth zones found');
+        return emptyFeatureCollection<GrowthZoneProperties>();
+      }
+
+      const features: GeoJSONFeature<GrowthZoneProperties>[] = [];
+      let skippedCount = 0;
+
+      for (const row of result.rows) {
+        // Safely parse geometry - skip rows with invalid geometry
+        const geometry = safeParseGeometry(row.geojson);
+        if (!geometry) {
+          skippedCount++;
+          this.logger.warn(`Skipping row ${row.id}: invalid geometry`);
+          continue;
+        }
+
+        features.push({
           type: 'Feature',
-          geometry: JSON.parse(row.geojson) as GeoJSONGeometry,
+          geometry,
           properties: {
-            id: row.id,
-            region_name: row.region_name,
-            growth_score: row.growth_score,
-            classification: row.classification,
-            created_at: row.created_at.toISOString(),
+            id: row.id ?? '',
+            region_name: row.region_name ?? 'Unknown',
+            growth_score: row.growth_score ?? 0,
+            classification: row.classification ?? 'rural',
+            created_at: safeISOString(row.created_at),
           },
-        }),
-      );
+        });
+      }
+
+      if (skippedCount > 0) {
+        this.logger.warn(`Skipped ${skippedCount} rows with invalid geometry`);
+      }
 
       this.logger.debug(`Retrieved ${features.length} growth zones`);
 

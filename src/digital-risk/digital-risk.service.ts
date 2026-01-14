@@ -8,8 +8,12 @@ import {
   GeoJSONFeatureCollection,
   GeoJSONFeature,
   DigitalRiskProperties,
-  GeoJSONGeometry,
 } from '../common/types/geojson.types';
+import {
+  safeParseGeometry,
+  safeISOString,
+  emptyFeatureCollection,
+} from '../common/utils/geojson.utils';
 
 interface DigitalRiskRow {
   id: string;
@@ -30,6 +34,7 @@ export class DigitalRiskService {
   /**
    * Retrieves all digital risk regions as a GeoJSON FeatureCollection
    * Each feature is a Polygon representing a risk-assessed region
+   * Returns empty FeatureCollection if no data or on error
    */
   async getDigitalRiskZones(): Promise<
     GeoJSONFeatureCollection<DigitalRiskProperties>
@@ -50,20 +55,41 @@ export class DigitalRiskService {
         ORDER BY risk_score DESC
       `);
 
-      const features: GeoJSONFeature<DigitalRiskProperties>[] = result.rows.map(
-        (row) => ({
+      // Handle empty result set
+      if (!result.rows || result.rows.length === 0) {
+        this.logger.debug('No digital risk zones found');
+        return emptyFeatureCollection<DigitalRiskProperties>();
+      }
+
+      const features: GeoJSONFeature<DigitalRiskProperties>[] = [];
+      let skippedCount = 0;
+
+      for (const row of result.rows) {
+        // Safely parse geometry - skip rows with invalid geometry
+        const geometry = safeParseGeometry(row.geojson);
+        if (!geometry) {
+          skippedCount++;
+          this.logger.warn(`Skipping row ${row.id}: invalid geometry`);
+          continue;
+        }
+
+        features.push({
           type: 'Feature',
-          geometry: JSON.parse(row.geojson) as GeoJSONGeometry,
+          geometry,
           properties: {
-            id: row.id,
-            region_name: row.region_name,
-            risk_score: row.risk_score,
-            risk_level: row.risk_level,
-            factors: row.factors,
-            created_at: row.created_at.toISOString(),
+            id: row.id ?? '',
+            region_name: row.region_name ?? 'Unknown',
+            risk_score: row.risk_score ?? 0,
+            risk_level: row.risk_level ?? 'low',
+            factors: row.factors ?? {},
+            created_at: safeISOString(row.created_at),
           },
-        }),
-      );
+        });
+      }
+
+      if (skippedCount > 0) {
+        this.logger.warn(`Skipped ${skippedCount} rows with invalid geometry`);
+      }
 
       this.logger.debug(`Retrieved ${features.length} digital risk zones`);
 
